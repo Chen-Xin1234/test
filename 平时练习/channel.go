@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"sync"
 )
 var (
+	channel = make(chan int,20)
 	myres = make(map[int]int, 20)
-	mu    sync.Mutex
 )
 
 func factorial(n int) {
@@ -14,18 +13,18 @@ func factorial(n int) {
 	for i := 1; i <= n; i++ {
 		res *= i
 	}
-	mu.Lock()
 	myres[n] = res
-	mu.Unlock()
+
 }
 
 func main() {
 	for i := 1; i <= 20; i++ {
 		go factorial(i)
+		channel <- i
 	}
-	mu.Lock()
+
 	for i, v := range myres {
 		fmt.Printf("myres[%d] = %d\n", i, v)
 	}
-	mu.Unlock()
+
 }
